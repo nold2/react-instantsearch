@@ -66,15 +66,15 @@
   "bundlesize": [
     {
       "path": "dist/umd/Core.min.js",
-      "maxSize": "8 kB"
+      "maxSize": "40 kB"
     },
     {
       "path": "dist/umd/Connectors.min.js",
-      "maxSize": "38 kB"
+      "maxSize": "40 kB"
     },
     {
       "path": "dist/umd/Dom.min.js",
-      "maxSize": "62 kB"
+      "maxSize": "63 kB"
     }
   ]
 }
