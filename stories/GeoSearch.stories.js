@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { setAddon, storiesOf } from '@storybook/react';
-import { GeoSearch, Configure } from '../packages/react-instantsearch/dom';
+import {
+  GeoSearch,
+  Configure,
+  CurrentRefinements,
+} from '../packages/react-instantsearch/dom';
 import { displayName, filterProps, WrapWithHits } from './util';
 import JSXAddon from 'storybook-addon-jsx';
 
@@ -311,6 +315,35 @@ stories
           mapElement={<div style={{ height: `100%` }} />}
           enableRefineControl={false}
           enableRefineOnMapMove={false}
+        />
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with CurrentRefinement',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
+
+        <div style={{ height: 50 }}>
+          <CurrentRefinements />
+        </div>
+
+        <GeoSearch
+          googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
+          loadingElement={<div style={{ height: `100%` }} />}
+          containerElement={<div style={{ height: `500px` }} />}
+          mapElement={<div style={{ height: `100%` }} />}
         />
       </WrapWithHits>
     ),
