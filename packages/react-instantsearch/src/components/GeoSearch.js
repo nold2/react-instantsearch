@@ -16,7 +16,7 @@ class GeoSearch extends Component {
     isRefinedWithMap: PropTypes.bool.isRequired,
     isRefineOnMapMove: PropTypes.bool.isRequired,
     hasMapMoveSinceLastRefine: PropTypes.bool.isRequired,
-    // refine: PropTypes.func.isRequired,
+    refine: PropTypes.func.isRequired,
     toggleRefineOnMapMove: PropTypes.func.isRequired,
     setMapMoveSinceLastRefine: PropTypes.func.isRequired,
   };
@@ -76,27 +76,23 @@ class GeoSearch extends Component {
   }
 
   refineWithMap = () => {
-    // const { refine, setMapMoveSinceLastRefine } = this.props;
-    const { setMapMoveSinceLastRefine } = this.props;
+    const { refine, setMapMoveSinceLastRefine } = this.props;
 
-    // const ne = this.element.getBounds().getNorthEast();
-    // const sw = this.element.getBounds().getSouthWest();
+    const ne = this.element.getBounds().getNorthEast();
+    const sw = this.element.getBounds().getSouthWest();
 
-    // refine({
-    //   northEast: { lat: ne.lat(), lng: ne.lng() },
-    //   southWest: { lat: sw.lat(), lng: sw.lng() },
-    // });
-    console.log('refine(bounds)');
+    refine({
+      northEast: { lat: ne.lat(), lng: ne.lng() },
+      southWest: { lat: sw.lat(), lng: sw.lng() },
+    });
 
     setMapMoveSinceLastRefine(false);
   };
 
   clearMapRefinement = () => {
-    // const { refine, setMapMoveSinceLastRefine } = this.props;
-    const { setMapMoveSinceLastRefine } = this.props;
+    const { refine, setMapMoveSinceLastRefine } = this.props;
 
-    // refine();
-    console.log('refine()');
+    refine();
 
     setMapMoveSinceLastRefine(false);
   };
