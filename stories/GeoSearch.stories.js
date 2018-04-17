@@ -14,8 +14,11 @@ stories.addWithJSX(
     <WrapWithHits
       linkedStoryGroup="GeoSearch"
       indexName="airbnb"
+      searchBox={false}
       searchParameters={{
         hitsPerPage: 25,
+        aroundLatLngViaIP: true,
+        aroundRadius: 10000,
       }}
     >
       <GeoSearch

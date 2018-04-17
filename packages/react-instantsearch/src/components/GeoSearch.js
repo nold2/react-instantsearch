@@ -12,11 +12,11 @@ import {
 
 class GeoSearch extends Component {
   static propTypes = {
-    items: PropTypes.arrayOf(PropTypes.object).isRequired,
+    hits: PropTypes.arrayOf(PropTypes.object).isRequired,
     isRefinedWithMap: PropTypes.bool.isRequired,
     isRefineOnMapMove: PropTypes.bool.isRequired,
     hasMapMoveSinceLastRefine: PropTypes.bool.isRequired,
-    refine: PropTypes.func.isRequired,
+    // refine: PropTypes.func.isRequired,
     toggleRefineOnMapMove: PropTypes.func.isRequired,
     setMapMoveSinceLastRefine: PropTypes.func.isRequired,
   };
@@ -58,13 +58,14 @@ class GeoSearch extends Component {
   };
 
   fitViewToBounds() {
-    const { items, hasMapMoveSinceLastRefine, isRefinedWithMap } = this.props;
-    const isFitBoundsEnable = !hasMapMoveSinceLastRefine && !isRefinedWithMap;
+    const { hits, hasMapMoveSinceLastRefine, isRefinedWithMap } = this.props;
+    const isFitBoundsEnable =
+      Boolean(hits.length) && !hasMapMoveSinceLastRefine && !isRefinedWithMap;
 
     if (isFitBoundsEnable) {
       this.isUserInteraction = false;
       this.element.fitBounds(
-        items.reduce(
+        hits.reduce(
           (acc, item) =>
             acc.extend({ lat: item._geoloc.lat, lng: item._geoloc.lng }),
           new google.maps.LatLngBounds()
@@ -75,30 +76,34 @@ class GeoSearch extends Component {
   }
 
   refineWithMap = () => {
-    const { refine, setMapMoveSinceLastRefine } = this.props;
+    // const { refine, setMapMoveSinceLastRefine } = this.props;
+    const { setMapMoveSinceLastRefine } = this.props;
 
-    const ne = this.element.getBounds().getNorthEast();
-    const sw = this.element.getBounds().getSouthWest();
+    // const ne = this.element.getBounds().getNorthEast();
+    // const sw = this.element.getBounds().getSouthWest();
 
-    refine({
-      northEast: { lat: ne.lat(), lng: ne.lng() },
-      southWest: { lat: sw.lat(), lng: sw.lng() },
-    });
+    // refine({
+    //   northEast: { lat: ne.lat(), lng: ne.lng() },
+    //   southWest: { lat: sw.lat(), lng: sw.lng() },
+    // });
+    console.log('refine(bounds)');
 
     setMapMoveSinceLastRefine(false);
   };
 
   clearMapRefinement = () => {
-    const { refine, setMapMoveSinceLastRefine } = this.props;
+    // const { refine, setMapMoveSinceLastRefine } = this.props;
+    const { setMapMoveSinceLastRefine } = this.props;
 
-    refine();
+    // refine();
+    console.log('refine()');
 
     setMapMoveSinceLastRefine(false);
   };
 
   render() {
     const {
-      items,
+      hits,
       isRefineOnMapMove,
       isRefinedWithMap,
       hasMapMoveSinceLastRefine,
@@ -125,7 +130,7 @@ class GeoSearch extends Component {
           onZoomChanged={this.onChange}
           onIdle={this.onIdle}
         >
-          {items.map(item => (
+          {hits.map(item => (
             <Marker key={item.objectID} position={item._geoloc} />
           ))}
         </GoogleMap>
