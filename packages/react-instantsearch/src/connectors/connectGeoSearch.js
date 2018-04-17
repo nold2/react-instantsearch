@@ -1,5 +1,10 @@
+import PropTypes from 'prop-types';
 import createConnector from '../core/createConnector';
-import { getResults, getCurrentRefinementValue } from '../core/indexUtils';
+import {
+  getResults,
+  getCurrentRefinementValue,
+  refineValue,
+} from '../core/indexUtils';
 
 const getBoundingBoxId = () => 'boundingBox';
 
@@ -45,6 +50,16 @@ const setMapMoveSinceLastRefine = update => value =>
   });
 
 export default createConnector({
+  displayName: 'AlgoliaGeoSearch',
+
+  propTypes: {
+    enableRefineOnMapMove: PropTypes.bool,
+  },
+
+  defaultProps: {
+    enableRefineOnMapMove: true,
+  },
+
   getInitialUiState({ enableRefineOnMapMove }) {
     return {
       isRefineOnMapMove: enableRefineOnMapMove,
@@ -95,5 +110,14 @@ export default createConnector({
       isRefineOnMapMove,
       hasMapMoveSinceLastRefine,
     };
+  },
+
+  refine(props, searchState, nextValue) {
+    const resetPage = true;
+    const nextRefinement = {
+      [getBoundingBoxId()]: nextValue,
+    };
+
+    return refineValue(searchState, nextRefinement, this.context, resetPage);
   },
 });
