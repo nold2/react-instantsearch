@@ -61,11 +61,13 @@ export default function createConnector(connectorDesc) {
       constructor(props, context) {
         super(props, context);
 
-        const { ais: { store, widgetsManager } } = context;
+        const {
+          ais: { store, widgetsManager },
+        } = context;
         const canRender = false;
 
-        const initialUiState = connectorDesc.initialUiState
-          ? connectorDesc.initialUiState(props)
+        const initialUiState = connectorDesc.getInitialUiState
+          ? connectorDesc.getInitialUiState(props)
           : {};
 
         this.state = {
@@ -86,7 +88,7 @@ export default function createConnector(connectorDesc) {
               props: this.getProvidedProps({
                 uiState: prevState.uiState,
                 props: {
-                  ...prevState.props,
+                  ...this.props,
                   canRender: prevState.canRender,
                 },
               }),
@@ -181,12 +183,16 @@ export default function createConnector(connectorDesc) {
         }
       }
 
+      // The canRender props is not sync with the one from the state because
+      // in this lifecycle we don't pass the `canRender` prop to the getProvidedProps
+      // function. It means that every time a component received new props the canRender
+      // prop is `undefined`.
       componentWillReceiveProps(nextProps) {
         if (!isEqual(this.props, nextProps)) {
           this.setState(prevState => ({
             props: this.getProvidedProps({
-              props: nextProps,
               uiState: prevState.uiState,
+              props: nextProps,
             }),
           }));
 
@@ -311,17 +317,17 @@ export default function createConnector(connectorDesc) {
 
       cleanUp = (...args) => connectorDesc.cleanUp.call(this, ...args);
 
-      setUiState = fn =>
+      setUiState = uiStateUpdater =>
         this.setState(prevState => {
-          const next = fn(prevState.uiState);
+          const nextSliceUiState = uiStateUpdater(prevState.uiState);
 
-          if (next === null) {
+          if (!nextSliceUiState) {
             return null;
           }
 
           const nextUiState = {
             ...prevState.uiState,
-            ...next,
+            ...nextSliceUiState,
           };
 
           return {

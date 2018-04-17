@@ -16,7 +16,9 @@ import createConnector from '../core/createConnector';
  * a numeric range.
  * @name connectRange
  * @kind connector
- * @requirements The attribute passed to the `attribute` prop must be holding numerical values.
+ * @requirements The attribute passed to the `attribute` prop must be present in “attributes for faceting”
+ * on the Algolia dashboard or configured as `attributesForFaceting` via a set settings call to the Algolia API.
+ * The values inside the attribute must be JavaScript numbers (not strings).
  * @propType {string} attribute - Name of the attribute for faceting
  * @propType {{min?: number, max?: number}} [defaultRefinement] - Default searchState of the widget containing the start and the end of the range.
  * @propType {number} [min] - Minimum value. When this isn't set, the minimum value will be automatically computed by Algolia using the data in the index.
@@ -71,14 +73,27 @@ function getCurrentRefinement(props, searchState, currentRange, context) {
     `${namespace}.${getId(props)}`,
     {},
     currentRefinement => {
-      let { min, max } = currentRefinement;
-      if (typeof min === 'string') {
-        min = parseInt(min, 10);
+      const { min, max } = currentRefinement;
+      const isFloatPrecision = Boolean(props.precision);
+
+      let nextMin = min;
+      if (typeof nextMin === 'string') {
+        nextMin = isFloatPrecision
+          ? parseFloat(nextMin)
+          : parseInt(nextMin, 10);
       }
-      if (typeof max === 'string') {
-        max = parseInt(max, 10);
+
+      let nextMax = max;
+      if (typeof nextMax === 'string') {
+        nextMax = isFloatPrecision
+          ? parseFloat(nextMax)
+          : parseInt(nextMax, 10);
       }
-      return { min, max };
+
+      return {
+        min: nextMin,
+        max: nextMax,
+      };
     }
   );
 
