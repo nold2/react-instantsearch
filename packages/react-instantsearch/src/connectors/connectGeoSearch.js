@@ -1,6 +1,10 @@
 import PropTypes from 'prop-types';
 import createConnector from '../core/createConnector';
-import { getResults, getCurrentRefinementValue } from '../core/indexUtils';
+import {
+  getResults,
+  getCurrentRefinementValue,
+  refineValue,
+} from '../core/indexUtils';
 
 const getBoundingBoxId = () => 'boundingBox';
 
@@ -106,5 +110,14 @@ export default createConnector({
       isRefineOnMapMove,
       hasMapMoveSinceLastRefine,
     };
+  },
+
+  refine(props, searchState, nextValue) {
+    const resetPage = true;
+    const nextRefinement = {
+      [getBoundingBoxId()]: nextValue,
+    };
+
+    return refineValue(searchState, nextRefinement, this.context, resetPage);
   },
 });
