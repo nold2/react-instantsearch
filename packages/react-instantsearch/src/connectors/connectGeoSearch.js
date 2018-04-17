@@ -32,15 +32,15 @@ const toggleRefineOnMapMove = update => () =>
     isRefineOnMapMove: !prevState.isRefineOnMapMove,
   }));
 
-const setMapMoveSinceLastRefine = update => () =>
-  update(prevState => {
+const setMapMoveSinceLastRefine = update => value =>
+  update(({ hasMapMoveSinceLastRefine }) => {
     // Prevent rendering when the map has moved
-    if (prevState.hasMapMoveSinceLastRefine) {
+    if (hasMapMoveSinceLastRefine === value) {
       return null;
     }
 
     return {
-      hasMapMoveSinceLastRefine: true,
+      hasMapMoveSinceLastRefine: value,
     };
   });
 

@@ -75,3 +75,19 @@ export function removeEmptyKey(obj) {
   });
   return obj;
 }
+
+const latLngRegExp = /^(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)$/;
+export const parseLatLngFromString = value => {
+  const pattern = value.match(latLngRegExp);
+
+  // Since the value provided is the one send with the query, the API should
+  // throw an error due to the wrong format. So throw an error should be safe..
+  if (!pattern) {
+    throw new Error(`Invalid value for "aroundLatLng" parameter: "${value}"`);
+  }
+
+  return {
+    lat: parseFloat(pattern[1]),
+    lng: parseFloat(pattern[2]),
+  };
+};

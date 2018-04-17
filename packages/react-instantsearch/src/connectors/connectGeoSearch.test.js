@@ -594,7 +594,7 @@ describe('connectGeoSearch', () => {
     });
 
     describe('setMapMoveSinceLastRefine', () => {
-      it('expect to return true when the previous value is false', () => {
+      it('expect to return true when the given value is true', () => {
         const instance = createSingleIndexInstance();
         const props = createProps();
         const searchState = createSearchState();
@@ -617,12 +617,12 @@ describe('connectGeoSearch', () => {
 
         expect(providedProps.hasMapMoveSinceLastRefine).toBe(false);
 
-        const actual = providedProps.setMapMoveSinceLastRefine();
+        const actual = providedProps.setMapMoveSinceLastRefine(true);
 
         expect(actual.hasMapMoveSinceLastRefine).toBe(true);
       });
 
-      it('expect to return null when the previous value is already true', () => {
+      it('expect to return false when the given value is false', () => {
         const instance = createSingleIndexInstance();
         const props = createProps();
         const searchState = createSearchState();
@@ -648,7 +648,38 @@ describe('connectGeoSearch', () => {
 
         expect(providedProps.hasMapMoveSinceLastRefine).toBe(true);
 
-        const actual = providedProps.setMapMoveSinceLastRefine();
+        const actual = providedProps.setMapMoveSinceLastRefine(false);
+
+        expect(actual.hasMapMoveSinceLastRefine).toBe(false);
+      });
+
+      it('expect to return null when the given value is equal to the previous one', () => {
+        const instance = createSingleIndexInstance();
+        const props = createProps();
+        const searchState = createSearchState();
+        const searchResults = createSearchResults();
+        const metadata = empty;
+        const searchForFacetValuesResults = empty;
+        const uiState = {
+          ...connector.getInitialUiState(props),
+          hasMapMoveSinceLastRefine: true,
+        };
+        const setUiState = fn => fn(uiState);
+
+        const providedProps = connector.getProvidedProps.call(
+          instance,
+          props,
+          searchState,
+          searchResults,
+          metadata,
+          searchForFacetValuesResults,
+          uiState,
+          setUiState
+        );
+
+        expect(providedProps.hasMapMoveSinceLastRefine).toBe(true);
+
+        const actual = providedProps.setMapMoveSinceLastRefine(true);
 
         expect(actual).toBe(null);
       });
