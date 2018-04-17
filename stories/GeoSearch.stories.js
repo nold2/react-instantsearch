@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { setAddon, storiesOf } from '@storybook/react';
 import { GeoSearch, Configure } from '../packages/react-instantsearch/dom';
 import { displayName, filterProps, WrapWithHits } from './util';
@@ -319,3 +319,47 @@ stories
       filterProps,
     }
   );
+
+stories.add('with unmount', () => {
+  class App extends Component {
+    state = {
+      isVisible: true,
+    };
+
+    onToggle = () =>
+      this.setState(prevState => ({
+        isVisible: !prevState.isVisible,
+      }));
+
+    render() {
+      const { isVisible } = this.state;
+
+      return (
+        <WrapWithHits
+          linkedStoryGroup="GeoSearch"
+          indexName="airbnb"
+          searchParameters={{
+            hitsPerPage: 25,
+          }}
+        >
+          <button onClick={this.onToggle}>
+            {isVisible ? 'Unmount' : 'Mount'}
+          </button>
+
+          <Configure aroundLatLngViaIP />
+
+          {isVisible && (
+            <GeoSearch
+              googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
+              loadingElement={<div style={{ height: `100%` }} />}
+              containerElement={<div style={{ height: `500px` }} />}
+              mapElement={<div style={{ height: `100%` }} />}
+            />
+          )}
+        </WrapWithHits>
+      );
+    }
+  }
+
+  return <App />;
+});
