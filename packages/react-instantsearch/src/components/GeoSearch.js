@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* global google */
 
+import { isEqual } from 'lodash';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -19,17 +20,49 @@ class GeoSearch extends Component {
     refine: PropTypes.func.isRequired,
     toggleRefineOnMapMove: PropTypes.func.isRequired,
     setMapMoveSinceLastRefine: PropTypes.func.isRequired,
+    position: PropTypes.object,
+    currentRefinement: PropTypes.object,
   };
 
   isMapAlreadyLoaded = false;
   isPendingRefine = false;
   isUserInteraction = true;
 
+  lastRefinePosition = null;
+  lastRefineBoundingBox = null;
+
   componentDidMount() {
     this.fitViewToBounds();
   }
 
   componentDidUpdate() {
+    const {
+      position,
+      currentRefinement,
+      setMapMoveSinceLastRefine,
+    } = this.props;
+
+    // It's not possible to put this in the connector
+    // because we can't we have no way to properly:
+    // - 1. hook on the update
+    // - 2. trigger a proper upadte
+    const positionChangedSinceLastRefine =
+      Boolean(position) &&
+      Boolean(this.lastRefinePosition) &&
+      !isEqual(position, this.lastRefinePosition);
+
+    const boundingBoxChangedSinceLastRefine =
+      !currentRefinement &&
+      Boolean(this.lastRefineBoundingBox) &&
+      !isEqual(currentRefinement, this.lastRefineBoundingBox);
+
+    this.lastRefinePosition = position || null;
+    this.lastRefineBoundingBox = currentRefinement || null;
+
+    if (positionChangedSinceLastRefine || boundingBoxChangedSinceLastRefine) {
+      setMapMoveSinceLastRefine(false);
+    }
+
     this.fitViewToBounds();
   }
 
