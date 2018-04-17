@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { setAddon, storiesOf } from '@storybook/react';
+import places from 'places.js';
 import {
   GeoSearch,
   Configure,
@@ -208,10 +210,113 @@ stories
   );
 
 // With Places @TODO
-stories.addWithJSX('with Places', () => <div>TODO</div>, {
-  displayName,
-  filterProps,
-});
+stories.addWithJSX(
+  'with Places',
+  () => {
+    class Places extends Component {
+      static propTypes = {
+        onChange: PropTypes.func.isRequired,
+        defaultRefinement: PropTypes.object.isRequired,
+      };
+
+      createRef = c => (this.element = c);
+
+      componentDidMount() {
+        const { onChange, defaultRefinement } = this.props;
+
+        const autocomplete = places({
+          container: this.element,
+        });
+
+        onChange(defaultRefinement);
+
+        autocomplete.on('change', event => {
+          onChange(event.suggestion.latlng);
+        });
+
+        autocomplete.on('clear', () => {
+          onChange(defaultRefinement);
+        });
+      }
+
+      render() {
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <input
+              ref={this.createRef}
+              type="search"
+              id="address-input"
+              placeholder="Where are we going?"
+            />
+          </div>
+        );
+      }
+    }
+
+    class App extends Component {
+      state = {
+        searchState: {},
+      };
+
+      onPlacesChange = ({ lat, lng }) =>
+        this.setState(() => ({
+          searchState: {
+            boundingBox: null,
+            aroundLatLng: {
+              lat,
+              lng,
+            },
+          },
+        }));
+
+      onSearchStateChange = searchState =>
+        this.setState(() => ({
+          searchState,
+        }));
+
+      render() {
+        const { searchState } = this.state;
+        const { aroundLatLng } = searchState;
+
+        return (
+          <WrapWithHits
+            linkedStoryGroup="GeoSearch"
+            indexName="airbnb"
+            searchState={searchState}
+            onSearchStateChange={this.onSearchStateChange}
+            searchParameters={{
+              hitsPerPage: 25,
+              ...(aroundLatLng && {
+                aroundLatLng: `${aroundLatLng.lat},${aroundLatLng.lng}`,
+              }),
+            }}
+          >
+            <Places
+              onChange={this.onPlacesChange}
+              defaultRefinement={{
+                lat: 37.7793,
+                lng: -122.419,
+              }}
+            />
+
+            <GeoSearch
+              googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
+              loadingElement={<div style={{ height: `100%` }} />}
+              containerElement={<div style={{ height: `500px` }} />}
+              mapElement={<div style={{ height: `100%` }} />}
+            />
+          </WrapWithHits>
+        );
+      }
+    }
+
+    return <App />;
+  },
+  {
+    displayName,
+    filterProps,
+  }
+);
 
 // Only UI
 stories

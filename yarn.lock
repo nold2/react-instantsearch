@@ -1412,6 +1412,12 @@ atob@^2.0.0:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.0.3.tgz#19c7a760473774468f20b2d2d03372ad7d4cbf5d"
 
+autocomplete.js@^0.28.2:
+  version "0.28.3"
+  resolved "https://registry.yarnpkg.com/autocomplete.js/-/autocomplete.js-0.28.3.tgz#b90dc01688613ab16488bbb6f5314fd2a365ec4b"
+  dependencies:
+    immediate "^3.2.3"
+
 autoprefixer@8.3.0:
   version "8.3.0"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-8.3.0.tgz#22ac5151c3c8946bb8f75f337d5c5042c0ec6404"
@@ -7181,6 +7187,10 @@ image-size@^0.6.0:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/image-size/-/image-size-0.6.2.tgz#8ee316d4298b028b965091b673d5f1537adee5b4"
 
+immediate@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.2.3.tgz#d140fa8f614659bd6541233097ddaac25cdd991c"
+
 immediate@~3.0.5:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
@@ -10459,6 +10469,15 @@ pkginfo@0.3.x:
 pkginfo@0.x.x:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.4.1.tgz#b5418ef0439de5425fc4995042dced14fb2a84ff"
+
+places.js@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/places.js/-/places.js-1.6.0.tgz#0fddc485e271eee04103212fb6d0f8b9b1e5b358"
+  dependencies:
+    algoliasearch "^3.24.0"
+    autocomplete.js "^0.28.2"
+    events "^1.1.1"
+    insert-css "^2.0.0"
 
 plist@2.0.1:
   version "2.0.1"

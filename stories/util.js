@@ -74,6 +74,8 @@ export const WrapWithHits = ({
   appId,
   apiKey,
   indexName,
+  searchState,
+  onSearchStateChange,
 }) => {
   const sourceCodeUrl = `https://github.com/algolia/react-instantsearch/tree/master/stories/${linkedStoryGroup}.stories.js`;
   const playgroundLink = hasPlayground ? (
@@ -100,7 +102,13 @@ export const WrapWithHits = ({
   };
 
   return (
-    <InstantSearch appId={appId} apiKey={apiKey} indexName={indexName}>
+    <InstantSearch
+      appId={appId}
+      apiKey={apiKey}
+      indexName={indexName}
+      searchState={searchState}
+      onSearchStateChange={onSearchStateChange}
+    >
       <Configure {...searchParameters} />
       <div>
         <div className="container widget-container">{children}</div>
@@ -142,6 +150,8 @@ WrapWithHits.propTypes = {
   hasPlayground: PropTypes.bool,
   pagination: PropTypes.bool,
   searchParameters: PropTypes.object,
+  searchState: PropTypes.object,
+  onSearchStateChange: PropTypes.func,
 };
 
 // defaultProps added so that they're displayed in the JSX addon
