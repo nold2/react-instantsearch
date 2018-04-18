@@ -62,9 +62,9 @@ class GeoSearch extends Component {
       this.setState(() => ({
         hasMapMoveSinceLastRefine: false,
       }));
-    } else {
-      this.fitViewToBounds();
     }
+
+    this.fitViewToBounds();
   }
 
   onMapChange = () => {
