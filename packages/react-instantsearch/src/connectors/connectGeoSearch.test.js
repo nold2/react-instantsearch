@@ -124,15 +124,15 @@ describe('connectGeoSearch', () => {
 
       describe('position', () => {
         it('expect to return the position from the searchState', () => {
-          const aroundLatLng = {
-            lat: 10,
-            lng: 12,
-          };
-
           const instance = createSingleIndexInstance();
           const props = {};
-          const searchState = { aroundLatLng };
           const searchResults = createSingleSearchResults();
+          const searchState = {
+            aroundLatLng: {
+              lat: 10,
+              lng: 12,
+            },
+          };
 
           const actual = connector.getProvidedProps.call(
             instance,
@@ -166,21 +166,21 @@ describe('connectGeoSearch', () => {
 
       describe('currentRefinement', () => {
         it('expect to return the boundingBox from the searchState', () => {
-          const boundingBox = {
-            northEast: {
-              lat: 10,
-              lng: 12,
-            },
-            southWest: {
-              lat: 12,
-              lng: 14,
-            },
-          };
-
           const instance = createSingleIndexInstance();
           const props = {};
-          const searchState = { boundingBox };
           const searchResults = createSingleSearchResults();
+          const searchState = {
+            boundingBox: {
+              northEast: {
+                lat: 10,
+                lng: 12,
+              },
+              southWest: {
+                lat: 12,
+                lng: 14,
+              },
+            },
+          };
 
           const actual = connector.getProvidedProps.call(
             instance,
@@ -228,8 +228,19 @@ describe('connectGeoSearch', () => {
 
           const instance = createSingleIndexInstance();
           const props = {};
-          const searchState = { boundingBox: '10, 12, 12, 14' };
           const searchResults = createSingleSearchResults(hits);
+          const searchState = {
+            boundingBox: {
+              northEast: {
+                lat: 10,
+                lng: 12,
+              },
+              southWest: {
+                lat: 12,
+                lng: 14,
+              },
+            },
+          };
 
           const actual = connector.getProvidedProps.call(
             instance,
@@ -242,10 +253,6 @@ describe('connectGeoSearch', () => {
         });
 
         it("expect to return true when it's refined with the map (from the searchParameters)", () => {
-          const sliceSearchParameters = {
-            insideBoundingBox: '10, 12, 12, 14',
-          };
-
           const hits = [
             { objectID: '123', _geoloc: true },
             { objectID: '456', _geoloc: true },
@@ -255,10 +262,9 @@ describe('connectGeoSearch', () => {
           const instance = createSingleIndexInstance();
           const props = {};
           const searchState = {};
-          const searchResults = createSingleSearchResults(
-            hits,
-            sliceSearchParameters
-          );
+          const searchResults = createSingleSearchResults(hits, {
+            insideBoundingBox: '10, 12, 12, 14',
+          });
 
           const actual = connector.getProvidedProps.call(
             instance,
@@ -853,10 +859,6 @@ describe('connectGeoSearch', () => {
         });
 
         it("expect to return true when it's refined with the map (from the searchParameters)", () => {
-          const sliceSearchParameters = {
-            insideBoundingBox: '10, 12, 12, 14',
-          };
-
           const hits = [
             { objectID: '123', _geoloc: true },
             { objectID: '456', _geoloc: true },
@@ -866,10 +868,9 @@ describe('connectGeoSearch', () => {
           const instance = createMultiIndexInstance();
           const props = {};
           const searchState = createMultiIndexSearchState();
-          const searchResults = createSingleSearchResults(
-            hits,
-            sliceSearchParameters
-          );
+          const searchResults = createSingleSearchResults(hits, {
+            insideBoundingBox: '10, 12, 12, 14',
+          });
 
           const actual = connector.getProvidedProps.call(
             instance,
