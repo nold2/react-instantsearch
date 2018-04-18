@@ -36,23 +36,6 @@ const currentRefinementToString = currentRefinement =>
     currentRefinement.southWest.lng,
   ].join();
 
-const toggleRefineOnMapMove = update => () =>
-  update(prevState => ({
-    isRefineOnMapMove: !prevState.isRefineOnMapMove,
-  }));
-
-const setMapMoveSinceLastRefine = update => value =>
-  update(({ hasMapMoveSinceLastRefine }) => {
-    // Prevent rendering when the map has moved
-    if (hasMapMoveSinceLastRefine === value) {
-      return null;
-    }
-
-    return {
-      hasMapMoveSinceLastRefine: value,
-    };
-  });
-
 export default createConnector({
   displayName: 'AlgoliaGeoSearch',
 
@@ -64,25 +47,8 @@ export default createConnector({
     enableRefineOnMapMove: true,
   },
 
-  getInitialUiState({ enableRefineOnMapMove }) {
-    return {
-      isRefineOnMapMove: enableRefineOnMapMove,
-      hasMapMoveSinceLastRefine: false,
-    };
-  },
-
-  getProvidedProps(
-    props,
-    searchState,
-    searchResults,
-    metadata,
-    searchForFacetValuesResults,
-    uiState,
-    setUiState
-  ) {
-    const { hasMapMoveSinceLastRefine, isRefineOnMapMove } = uiState;
+  getProvidedProps(props, searchState, searchResults) {
     const results = getResults(searchResults, this.context);
-
     const currentRefinement = getCurrentRefinement(
       props,
       searchState,
@@ -107,12 +73,8 @@ export default createConnector({
     return {
       hits: !results ? [] : results.hits.filter(_ => Boolean(_._geoloc)),
       position: getCurrentPosition(props, searchState, this.context),
-      toggleRefineOnMapMove: toggleRefineOnMapMove(setUiState),
-      setMapMoveSinceLastRefine: setMapMoveSinceLastRefine(setUiState),
       currentRefinement,
       isRefinedWithMap,
-      isRefineOnMapMove,
-      hasMapMoveSinceLastRefine,
     };
   },
 
