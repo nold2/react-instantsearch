@@ -261,7 +261,7 @@ stories.addWithJSX(
       onPlacesChange = ({ lat, lng }) =>
         this.setState(() => ({
           searchState: {
-            boundingBox: null,
+            boundingBox: undefined,
             aroundLatLng: {
               lat,
               lng,
