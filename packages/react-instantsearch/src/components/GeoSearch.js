@@ -15,13 +15,14 @@ class GeoSearch extends Component {
   static propTypes = {
     hits: PropTypes.arrayOf(PropTypes.object).isRequired,
     isRefinedWithMap: PropTypes.bool.isRequired,
-    isRefineOnMapMove: PropTypes.bool.isRequired,
-    hasMapMoveSinceLastRefine: PropTypes.bool.isRequired,
     refine: PropTypes.func.isRequired,
-    toggleRefineOnMapMove: PropTypes.func.isRequired,
-    setMapMoveSinceLastRefine: PropTypes.func.isRequired,
     position: PropTypes.object,
     currentRefinement: PropTypes.object,
+  };
+
+  state = {
+    isRefineOnMapMove: true,
+    hasMapMoveSinceLastRefine: false,
   };
 
   isMapAlreadyLoaded = false;
@@ -31,16 +32,14 @@ class GeoSearch extends Component {
   lastRefinePosition = null;
   lastRefineBoundingBox = null;
 
+  createRef = c => (this.element = c);
+
   componentDidMount() {
     this.fitViewToBounds();
   }
 
   componentDidUpdate() {
-    const {
-      position,
-      currentRefinement,
-      setMapMoveSinceLastRefine,
-    } = this.props;
+    const { position, currentRefinement } = this.props;
 
     // It's not possible to put this in the connector
     // because we can't we have no way to properly:
@@ -60,19 +59,21 @@ class GeoSearch extends Component {
     this.lastRefineBoundingBox = currentRefinement || null;
 
     if (positionChangedSinceLastRefine || boundingBoxChangedSinceLastRefine) {
-      setMapMoveSinceLastRefine(false);
+      this.setState(() => ({
+        hasMapMoveSinceLastRefine: false,
+      }));
+    } else {
+      this.fitViewToBounds();
     }
-
-    this.fitViewToBounds();
   }
 
-  createRef = c => (this.element = c);
-
-  onChange = () => {
-    const { isRefineOnMapMove, setMapMoveSinceLastRefine } = this.props;
+  onMapChange = () => {
+    const { isRefineOnMapMove } = this.state;
 
     if (this.isMapAlreadyLoaded && this.isUserInteraction) {
-      setMapMoveSinceLastRefine(true);
+      this.setState(() => ({
+        hasMapMoveSinceLastRefine: true,
+      }));
 
       if (isRefineOnMapMove) {
         this.isPendingRefine = true;
@@ -80,7 +81,7 @@ class GeoSearch extends Component {
     }
   };
 
-  onIdle = () => {
+  onMapIdle = () => {
     this.isMapAlreadyLoaded = true;
 
     if (this.isUserInteraction && this.isPendingRefine) {
@@ -90,8 +91,40 @@ class GeoSearch extends Component {
     }
   };
 
+  onToggle = () =>
+    this.setState(prevState => ({
+      isRefineOnMapMove: !prevState.isRefineOnMapMove,
+    }));
+
+  refineWithMap = () => {
+    const { refine } = this.props;
+
+    const ne = this.element.getBounds().getNorthEast();
+    const sw = this.element.getBounds().getSouthWest();
+
+    refine({
+      northEast: { lat: ne.lat(), lng: ne.lng() },
+      southWest: { lat: sw.lat(), lng: sw.lng() },
+    });
+
+    this.setState(() => ({
+      hasMapMoveSinceLastRefine: false,
+    }));
+  };
+
+  clearMapRefinement = () => {
+    const { refine } = this.props;
+
+    refine();
+
+    this.setState(() => ({
+      hasMapMoveSinceLastRefine: false,
+    }));
+  };
+
   fitViewToBounds() {
-    const { hits, hasMapMoveSinceLastRefine, isRefinedWithMap } = this.props;
+    const { hits, isRefinedWithMap } = this.props;
+    const { hasMapMoveSinceLastRefine } = this.state;
     const isFitBoundsEnable =
       Boolean(hits.length) && !hasMapMoveSinceLastRefine && !isRefinedWithMap;
 
@@ -108,36 +141,9 @@ class GeoSearch extends Component {
     }
   }
 
-  refineWithMap = () => {
-    const { refine, setMapMoveSinceLastRefine } = this.props;
-
-    const ne = this.element.getBounds().getNorthEast();
-    const sw = this.element.getBounds().getSouthWest();
-
-    refine({
-      northEast: { lat: ne.lat(), lng: ne.lng() },
-      southWest: { lat: sw.lat(), lng: sw.lng() },
-    });
-
-    setMapMoveSinceLastRefine(false);
-  };
-
-  clearMapRefinement = () => {
-    const { refine, setMapMoveSinceLastRefine } = this.props;
-
-    refine();
-
-    setMapMoveSinceLastRefine(false);
-  };
-
   render() {
-    const {
-      hits,
-      isRefineOnMapMove,
-      isRefinedWithMap,
-      hasMapMoveSinceLastRefine,
-      toggleRefineOnMapMove,
-    } = this.props;
+    const { hits, isRefinedWithMap } = this.props;
+    const { isRefineOnMapMove, hasMapMoveSinceLastRefine } = this.state;
 
     return (
       <div>
@@ -154,10 +160,10 @@ class GeoSearch extends Component {
               position: google.maps.ControlPosition.LEFT_TOP,
             },
           }}
-          onDragStart={this.onChange}
-          onCenterChanged={this.onChange}
-          onZoomChanged={this.onChange}
-          onIdle={this.onIdle}
+          onDragStart={this.onMapChange}
+          onCenterChanged={this.onMapChange}
+          onZoomChanged={this.onMapChange}
+          onIdle={this.onMapIdle}
         >
           {hits.map(item => (
             <Marker key={item.objectID} position={item._geoloc} />
@@ -169,7 +175,7 @@ class GeoSearch extends Component {
             <input
               type="checkbox"
               checked={isRefineOnMapMove}
-              onChange={toggleRefineOnMapMove}
+              onChange={this.onToggle}
             />
             Search as I move the map
           </label>
