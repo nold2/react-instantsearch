@@ -92,8 +92,8 @@ describe('connectGeoSearch', () => {
 
       const expectation = {
         hits: [],
-        position: null,
-        currentRefinement: null, // @TODO
+        position: undefined,
+        currentRefinement: undefined,
         isRefinedWithMap: false,
         isRefineOnMapMove: true,
         toggleRefineOnMapMove: expect.any(Function),
@@ -236,7 +236,7 @@ describe('connectGeoSearch', () => {
         });
       });
 
-      it('expect to return null from an empty searchState', () => {
+      it('expect to return undefined from an empty searchState', () => {
         const instance = createSingleIndexInstance();
         const props = createProps();
         const searchState = createSearchState();
@@ -257,7 +257,7 @@ describe('connectGeoSearch', () => {
           setUiState
         );
 
-        expect(actual.position).toBe(null);
+        expect(actual.position).toBe(undefined);
       });
     });
 
@@ -306,7 +306,7 @@ describe('connectGeoSearch', () => {
         });
       });
 
-      it('expect to return an null from an empty searchState', () => {
+      it('expect to return an undefined from an empty searchState', () => {
         const instance = createSingleIndexInstance();
         const props = createProps();
         const searchState = createSearchState();
@@ -327,7 +327,7 @@ describe('connectGeoSearch', () => {
           setUiState
         );
 
-        expect(actual.currentRefinement).toBe(null);
+        expect(actual.currentRefinement).toBe(undefined);
       });
     });
 
