@@ -22,7 +22,7 @@ class GeoSearch extends Component {
     },
   };
 
-  renderInnerChildren = ({ hits, currentRefinement, position, refine }) => {
+  renderConnectorChildren = ({ hits, currentRefinement, position, refine }) => {
     const { google, children, initialZoom, initialPosition } = this.props;
 
     const hitsLatLngBounds = hits.reduce(
@@ -56,12 +56,7 @@ class GeoSearch extends Component {
   };
 
   render() {
-    return (
-      // prettier-ignore
-      <Connector>
-        {this.renderInnerChildren}
-      </Connector>
-    );
+    return <Connector>{this.renderConnectorChildren}</Connector>;
   }
 }
 

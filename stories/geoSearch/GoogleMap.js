@@ -17,6 +17,7 @@ class GoogleMap extends Component {
     boundingBox: BoundingBoxPropTypes.isRequired,
     initialZoom: PropTypes.number.isRequired,
     initialPosition: LatLngPropTypes.isRequired,
+    refine: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
   };
 
@@ -30,6 +31,7 @@ class GoogleMap extends Component {
   };
 
   mapInstance = null;
+  isUserInteraction = true;
 
   createRef = c => (this.element = c);
 
@@ -53,6 +55,12 @@ class GoogleMap extends Component {
       },
     });
 
+    google.maps.event.addListenerOnce(
+      this.mapInstance,
+      'idle',
+      this.setupListenersWhenMapIsReady
+    );
+
     this.setState(() => ({
       isMapAlreadyRender: true,
     }));
@@ -62,13 +70,56 @@ class GoogleMap extends Component {
     const { google, boundingBox } = this.props;
 
     if (boundingBox) {
+      this.isUserInteraction = false;
       this.mapInstance.fitBounds(
         new google.maps.LatLngBounds(
           boundingBox.southWest,
           boundingBox.northEast
-        )
+        ),
+        0
       );
+      this.isUserInteraction = true;
     }
+  }
+
+  setupListenersWhenMapIsReady = () => {
+    const onChange = () => {
+      if (this.isUserInteraction) {
+        // setMapMoveSinceLastRefine();
+
+        // if (isRefineOnMapMove()) {
+        this.isPendingRefine = true;
+        // }
+      }
+    };
+
+    this.mapInstance.addListener('center_changed', onChange);
+    this.mapInstance.addListener('zoom_changed', onChange);
+    this.mapInstance.addListener('dragstart', onChange);
+
+    this.mapInstance.addListener('idle', () => {
+      if (this.isUserInteraction && this.isPendingRefine) {
+        this.isPendingRefine = false;
+
+        this.refineWithBoudingBox();
+      }
+    });
+  };
+
+  refineWithBoudingBox() {
+    const { refine } = this.props;
+    const currentLatLngBounds = this.mapInstance.getBounds();
+
+    refine({
+      northEast: {
+        lat: currentLatLngBounds.getNorthEast().lat(),
+        lng: currentLatLngBounds.getNorthEast().lng(),
+      },
+      southWest: {
+        lat: currentLatLngBounds.getSouthWest().lat(),
+        lng: currentLatLngBounds.getSouthWest().lng(),
+      },
+    });
   }
 
   render() {
