@@ -17,6 +17,7 @@ class GoogleMap extends Component {
     boundingBox: BoundingBoxPropTypes.isRequired,
     initialZoom: PropTypes.number.isRequired,
     initialPosition: LatLngPropTypes.isRequired,
+    isRefinedWithMap: PropTypes.bool.isRequired,
     refine: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
   };
@@ -67,7 +68,9 @@ class GoogleMap extends Component {
   }
 
   componentDidUpdate() {
-    const { google, boundingBox } = this.props;
+    const { google, boundingBox, isRefinedWithMap } = this.props;
+    // Keep the default padding when it's not refined with the map
+    const padding = isRefinedWithMap ? 0 : null;
 
     if (boundingBox) {
       this.isUserInteraction = false;
@@ -76,7 +79,7 @@ class GoogleMap extends Component {
           boundingBox.southWest,
           boundingBox.northEast
         ),
-        0
+        padding
       );
       this.isUserInteraction = true;
     }

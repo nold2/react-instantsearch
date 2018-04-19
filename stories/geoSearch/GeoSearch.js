@@ -22,7 +22,13 @@ class GeoSearch extends Component {
     },
   };
 
-  renderConnectorChildren = ({ hits, currentRefinement, position, refine }) => {
+  renderConnectorChildren = ({
+    hits,
+    currentRefinement,
+    position,
+    isRefinedWithMap,
+    refine,
+  }) => {
     const { google, children, initialZoom, initialPosition } = this.props;
 
     const hitsLatLngBounds = hits.reduce(
@@ -48,6 +54,7 @@ class GeoSearch extends Component {
         boundingBox={currentRefinement || hitsBoundingBox}
         initialZoom={initialZoom}
         initialPosition={position || initialPosition}
+        isRefinedWithMap={isRefinedWithMap}
         refine={refine}
       >
         {children({ hits })}
