@@ -31,6 +31,9 @@ class GeoSearch extends Component {
   }) => {
     const { google, children, initialZoom, initialPosition } = this.props;
 
+    // We can optimize this a bit to use isRefinedWithMap
+    // to avoid the bounds computation when the refienemnt
+    // is from the map
     const hitsLatLngBounds = hits.reduce(
       (acc, item) =>
         acc.extend({ lat: item._geoloc.lat, lng: item._geoloc.lng }),

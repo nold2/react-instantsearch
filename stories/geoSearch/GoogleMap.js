@@ -23,8 +23,10 @@ class GoogleMap extends Component {
   };
 
   static childContextTypes = {
-    google: PropTypes.object,
     instance: PropTypes.object,
+    google: PropTypes.object,
+    refine: PropTypes.func,
+    isRefinedWithMap: PropTypes.bool,
   };
 
   state = {
@@ -37,9 +39,13 @@ class GoogleMap extends Component {
   createRef = c => (this.element = c);
 
   getChildContext() {
+    const { google, refine, isRefinedWithMap } = this.props;
+
     return {
-      google: this.props.google,
       instance: this.mapInstance,
+      google,
+      refine,
+      isRefinedWithMap,
     };
   }
 
