@@ -25,7 +25,7 @@ class GoogleMap extends Component {
   static childContextTypes = {
     instance: PropTypes.object,
     google: PropTypes.object,
-    refine: PropTypes.func,
+    refineWithoutBoundingBox: PropTypes.func,
     refineWithBoudingBox: PropTypes.func,
     isRefinedWithMap: PropTypes.bool,
     hasMapMoveSinceLastRefine: PropTypes.bool,
@@ -43,14 +43,14 @@ class GoogleMap extends Component {
   createRef = c => (this.element = c);
 
   getChildContext() {
-    const { google, refine, isRefinedWithMap } = this.props;
+    const { google, isRefinedWithMap } = this.props;
     const { hasMapMoveSinceLastRefine } = this.state;
 
     return {
       instance: this.mapInstance,
       refineWithBoudingBox: this.refineWithBoudingBox,
+      refineWithoutBoundingBox: this.refineWithoutBoundingBox,
       google,
-      refine,
       isRefinedWithMap,
       hasMapMoveSinceLastRefine,
     };
@@ -82,10 +82,14 @@ class GoogleMap extends Component {
 
   componentDidUpdate() {
     const { google, boundingBox, isRefinedWithMap } = this.props;
+    const { hasMapMoveSinceLastRefine } = this.state;
+    const fitBoundsEnable =
+      boundingBox && !isRefinedWithMap && !hasMapMoveSinceLastRefine;
+
     // Keep the default padding when it's not refined with the map
     const padding = isRefinedWithMap ? 0 : null;
 
-    if (boundingBox) {
+    if (fitBoundsEnable) {
       this.isUserInteraction = false;
       this.mapInstance.fitBounds(
         new google.maps.LatLngBounds(
@@ -103,7 +107,9 @@ class GoogleMap extends Component {
       const { isRefineOnMapMove } = this.state;
 
       if (this.isUserInteraction) {
-        // setMapMoveSinceLastRefine();
+        this.setState(() => ({
+          hasMapMoveSinceLastRefine: true,
+        }));
 
         if (isRefineOnMapMove) {
           this.isPendingRefine = true;
@@ -124,6 +130,16 @@ class GoogleMap extends Component {
     });
   };
 
+  refineWithoutBoundingBox = () => {
+    const { refine } = this.props;
+
+    refine();
+
+    this.setState(() => ({
+      hasMapMoveSinceLastRefine: false,
+    }));
+  };
+
   refineWithBoudingBox = () => {
     const { refine } = this.props;
     const currentLatLngBounds = this.mapInstance.getBounds();
@@ -138,6 +154,14 @@ class GoogleMap extends Component {
         lng: currentLatLngBounds.getSouthWest().lng(),
       },
     });
+
+    // Should be after the refine otherwise it will
+    // trigger fitBounds on the previous marker
+    // -> refine -> render -> setState -> render
+    // -> setState -> render -> fitBounds -> refine -> render
+    this.setState(() => ({
+      hasMapMoveSinceLastRefine: false,
+    }));
   };
 
   render() {

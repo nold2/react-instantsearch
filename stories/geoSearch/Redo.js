@@ -6,7 +6,7 @@ const Redo = (_, { hasMapMoveSinceLastRefine, refineWithBoudingBox }) => (
   <Button
     className="redo"
     onClick={() => refineWithBoudingBox()}
-    disabled={hasMapMoveSinceLastRefine}
+    disabled={!hasMapMoveSinceLastRefine}
   >
     Redo search here
   </Button>
