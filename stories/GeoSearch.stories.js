@@ -8,7 +8,7 @@ import {
   Configure,
   // CurrentRefinements,
 } from '../packages/react-instantsearch/dom';
-import { GeoSearch, Marker, Clear } from './geoSearch';
+import { GeoSearch, Marker, Clear, Redo } from './geoSearch';
 import { displayName, filterProps, WrapWithHits } from './util';
 import JSXAddon from 'storybook-addon-jsx';
 
@@ -89,6 +89,7 @@ stories.addWithJSX(
               {({ hits }) => (
                 <Fragment>
                   {/* <Control enableRefineOnMapMove={false} /> */}
+                  <Redo />
                   <Clear />
 
                   {/* {currentHit && (

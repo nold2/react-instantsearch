@@ -26,11 +26,15 @@ class GoogleMap extends Component {
     instance: PropTypes.object,
     google: PropTypes.object,
     refine: PropTypes.func,
+    refineWithBoudingBox: PropTypes.func,
     isRefinedWithMap: PropTypes.bool,
+    hasMapMoveSinceLastRefine: PropTypes.bool,
   };
 
   state = {
     isMapAlreadyRender: false,
+    isRefineOnMapMove: false,
+    hasMapMoveSinceLastRefine: false,
   };
 
   mapInstance = null;
@@ -40,12 +44,15 @@ class GoogleMap extends Component {
 
   getChildContext() {
     const { google, refine, isRefinedWithMap } = this.props;
+    const { hasMapMoveSinceLastRefine } = this.state;
 
     return {
       instance: this.mapInstance,
+      refineWithBoudingBox: this.refineWithBoudingBox,
       google,
       refine,
       isRefinedWithMap,
+      hasMapMoveSinceLastRefine,
     };
   }
 
@@ -93,12 +100,14 @@ class GoogleMap extends Component {
 
   setupListenersWhenMapIsReady = () => {
     const onChange = () => {
+      const { isRefineOnMapMove } = this.state;
+
       if (this.isUserInteraction) {
         // setMapMoveSinceLastRefine();
 
-        // if (isRefineOnMapMove()) {
-        this.isPendingRefine = true;
-        // }
+        if (isRefineOnMapMove) {
+          this.isPendingRefine = true;
+        }
       }
     };
 
@@ -115,7 +124,7 @@ class GoogleMap extends Component {
     });
   };
 
-  refineWithBoudingBox() {
+  refineWithBoudingBox = () => {
     const { refine } = this.props;
     const currentLatLngBounds = this.mapInstance.getBounds();
 
@@ -129,7 +138,7 @@ class GoogleMap extends Component {
         lng: currentLatLngBounds.getSouthWest().lng(),
       },
     });
-  }
+  };
 
   render() {
     const { children } = this.props;
