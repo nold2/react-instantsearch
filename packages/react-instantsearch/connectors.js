@@ -54,3 +54,4 @@ export {
 export {
   default as connectGeoSearch,
 } from './src/connectors/connectGeoSearch.js';
+export { default as connectPlaces } from './src/connectors/connectPlaces.js';

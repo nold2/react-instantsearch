@@ -2,12 +2,12 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import injectScript from 'scriptjs';
 import { setAddon, storiesOf } from '@storybook/react';
-import places from 'places.js';
 import {
   Configure,
   CurrentRefinements,
 } from '../packages/react-instantsearch/dom';
 import { GeoSearch, Marker, Clear, Redo, Control } from './geoSearch';
+import Places from './geoSearch/Places';
 import { displayName, filterProps, WrapWithHits } from './util';
 import JSXAddon from 'storybook-addon-jsx';
 
@@ -361,125 +361,46 @@ stories
 // With Places
 stories.addWithJSX(
   'with Places',
-  () => {
-    class Places extends Component {
-      static propTypes = {
-        onChange: PropTypes.func.isRequired,
-        defaultRefinement: PropTypes.object.isRequired,
-      };
+  () => (
+    <WrapWithHits
+      linkedStoryGroup="GeoSearch"
+      indexName="airbnb"
+      searchParameters={{
+        hitsPerPage: 25,
+      }}
+    >
+      <Places
+        defaultRefinement={{
+          lat: 37.7793,
+          lng: -122.419,
+        }}
+      />
 
-      createRef = c => (this.element = c);
+      <div style={{ height: 500 }}>
+        <GoogleMapsLoader>
+          {google => (
+            <GeoSearch google={google}>
+              {({ hits }) => (
+                <Fragment>
+                  <Control />
 
-      componentDidMount() {
-        const { onChange, defaultRefinement } = this.props;
-
-        const autocomplete = places({
-          container: this.element,
-        });
-
-        onChange(defaultRefinement);
-
-        autocomplete.on('change', event => {
-          onChange(event.suggestion.latlng);
-        });
-
-        autocomplete.on('clear', () => {
-          onChange(defaultRefinement);
-        });
-      }
-
-      render() {
-        return (
-          <div style={{ marginBottom: 20 }}>
-            <input
-              ref={this.createRef}
-              type="search"
-              id="address-input"
-              placeholder="Where are we going?"
-            />
-          </div>
-        );
-      }
-    }
-
-    class App extends Component {
-      state = {
-        searchState: {},
-      };
-
-      onPlacesChange = ({ lat, lng }) =>
-        this.setState(({ searchState }) => ({
-          searchState: {
-            ...searchState,
-            boundingBox: undefined,
-            aroundLatLng: {
-              lat,
-              lng,
-            },
-          },
-        }));
-
-      onSearchStateChange = searchState =>
-        this.setState(() => ({
-          searchState,
-        }));
-
-      render() {
-        const { searchState } = this.state;
-        const { aroundLatLng } = searchState;
-
-        return (
-          <WrapWithHits
-            linkedStoryGroup="GeoSearch"
-            indexName="airbnb"
-            searchState={searchState}
-            onSearchStateChange={this.onSearchStateChange}
-            searchParameters={{
-              hitsPerPage: 25,
-              aroundRadius: radius,
-              ...(aroundLatLng && {
-                aroundLatLng: `${aroundLatLng.lat},${aroundLatLng.lng}`,
-              }),
-            }}
-          >
-            <Places
-              onChange={this.onPlacesChange}
-              defaultRefinement={{
-                lat: 37.7793,
-                lng: -122.419,
-              }}
-            />
-
-            <div style={{ height: 500 }}>
-              <GoogleMapsLoader>
-                {google => (
-                  <GeoSearch google={google}>
-                    {({ hits }) => (
-                      <Fragment>
-                        <Control />
-
-                        {hits.map(hit => (
-                          <Marker
-                            key={hit.objectID}
-                            hit={hit}
-                            position={hit._geoloc}
-                            onClick={() => {}}
-                            onHover={() => {}}
-                          />
-                        ))}
-                      </Fragment>
-                    )}
-                  </GeoSearch>
-                )}
-              </GoogleMapsLoader>
-            </div>
-          </WrapWithHits>
-        );
-      }
-    }
-
-    return <App />;
-  },
+                  {hits.map(hit => (
+                    <Marker
+                      key={hit.objectID}
+                      hit={hit}
+                      position={hit._geoloc}
+                      onClick={() => {}}
+                      onHover={() => {}}
+                    />
+                  ))}
+                </Fragment>
+              )}
+            </GeoSearch>
+          )}
+        </GoogleMapsLoader>
+      </div>
+    </WrapWithHits>
+  ),
   {
     displayName,
     filterProps,
