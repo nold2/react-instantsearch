@@ -11,6 +11,20 @@ const BoundingBoxPropTypes = PropTypes.shape({
   southWest: LatLngPropTypes.isRequired,
 });
 
+const hasMapMoveSinceLastRefineStateUpdater = ({
+  hasMapMoveSinceLastRefine,
+}) => {
+  // Prevent setState when the previous value
+  // is already true, not need to trigger a new render
+  if (hasMapMoveSinceLastRefine === true) {
+    return null;
+  }
+
+  return {
+    hasMapMoveSinceLastRefine: true,
+  };
+};
+
 class GoogleMap extends Component {
   static propTypes = {
     google: PropTypes.object.isRequired,
@@ -43,8 +57,6 @@ class GoogleMap extends Component {
   mapInstance = null;
   isUserInteraction = true;
   listeners = [];
-
-  createRef = c => (this.element = c);
 
   getChildContext() {
     const { google, isRefinedWithMap } = this.props;
@@ -119,9 +131,7 @@ class GoogleMap extends Component {
       const { isRefineOnMapMove } = this.state;
 
       if (this.isUserInteraction) {
-        this.setState(() => ({
-          hasMapMoveSinceLastRefine: true,
-        }));
+        this.setState(hasMapMoveSinceLastRefineStateUpdater);
 
         if (isRefineOnMapMove) {
           this.isPendingRefine = true;
@@ -205,7 +215,7 @@ class GoogleMap extends Component {
     return (
       <Fragment>
         <div
-          ref={this.createRef}
+          ref={c => (this.element = c)}
           className="ais-GeoSearch-map"
           style={{ width: '100%', height: '100%' }}
         />
