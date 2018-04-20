@@ -8,7 +8,7 @@ import {
   Configure,
   // CurrentRefinements,
 } from '../packages/react-instantsearch/dom';
-import { GeoSearch, Marker, Clear, Redo } from './geoSearch';
+import { GeoSearch, Marker, Clear, Redo, Control } from './geoSearch';
 import { displayName, filterProps, WrapWithHits } from './util';
 import JSXAddon from 'storybook-addon-jsx';
 
@@ -88,9 +88,15 @@ stories.addWithJSX(
             >
               {({ hits }) => (
                 <Fragment>
-                  {/* <Control enableRefineOnMapMove={false} /> */}
-                  <Redo />
-                  <Clear />
+                  {/* <Control /> */}
+                  {/* <Control defaultValue={false} /> */}
+
+                  {/* <Clear /> */}
+
+                  {/* Different propposal */}
+                  {/* <Redo /> */}
+                  {/* <DisableRefineOnMapMove /> */}
+                  {/* Other solution is to use a props on GeoSearch */}
 
                   {/* {currentHit && (
                   <InfoBox // Provided API

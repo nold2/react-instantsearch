@@ -27,13 +27,16 @@ class GoogleMap extends Component {
     google: PropTypes.object,
     refineWithoutBoundingBox: PropTypes.func,
     refineWithBoudingBox: PropTypes.func,
+    toggleRefineOnMapMove: PropTypes.func,
+    setInitialRefineOnMapMove: PropTypes.func,
     isRefinedWithMap: PropTypes.bool,
+    isRefineOnMapMove: PropTypes.bool,
     hasMapMoveSinceLastRefine: PropTypes.bool,
   };
 
   state = {
     isMapAlreadyRender: false,
-    isRefineOnMapMove: false,
+    isRefineOnMapMove: true,
     hasMapMoveSinceLastRefine: false,
   };
 
@@ -44,14 +47,17 @@ class GoogleMap extends Component {
 
   getChildContext() {
     const { google, isRefinedWithMap } = this.props;
-    const { hasMapMoveSinceLastRefine } = this.state;
+    const { isRefineOnMapMove, hasMapMoveSinceLastRefine } = this.state;
 
     return {
       instance: this.mapInstance,
       refineWithBoudingBox: this.refineWithBoudingBox,
       refineWithoutBoundingBox: this.refineWithoutBoundingBox,
+      toggleRefineOnMapMove: this.toggleRefineOnMapMove,
+      setInitialRefineOnMapMove: this.setInitialRefineOnMapMove,
       google,
       isRefinedWithMap,
+      isRefineOnMapMove,
       hasMapMoveSinceLastRefine,
     };
   }
@@ -161,6 +167,18 @@ class GoogleMap extends Component {
     // -> setState -> render -> fitBounds -> refine -> render
     this.setState(() => ({
       hasMapMoveSinceLastRefine: false,
+    }));
+  };
+
+  toggleRefineOnMapMove = () => {
+    this.setState(({ isRefineOnMapMove }) => ({
+      isRefineOnMapMove: !isRefineOnMapMove,
+    }));
+  };
+
+  setInitialRefineOnMapMove = value => {
+    this.setState(() => ({
+      isRefineOnMapMove: value,
     }));
   };
 

@@ -1,20 +1,31 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Button from './Button';
 
-const Redo = (_, { hasMapMoveSinceLastRefine, refineWithBoudingBox }) => (
-  <Button
-    className="redo"
-    onClick={() => refineWithBoudingBox()}
-    disabled={!hasMapMoveSinceLastRefine}
-  >
-    Redo search here
-  </Button>
-);
+class Redo extends Component {
+  static contextTypes = {
+    hasMapMoveSinceLastRefine: PropTypes.bool.isRequired,
+    refineWithBoudingBox: PropTypes.func.isRequired,
+    setInitialRefineOnMapMove: PropTypes.func.isRequired,
+  };
 
-Redo.contextTypes = {
-  refineWithBoudingBox: PropTypes.func.isRequired,
-  hasMapMoveSinceLastRefine: PropTypes.bool.isRequired,
-};
+  componentDidMount() {
+    this.context.setInitialRefineOnMapMove(false);
+  }
+
+  render() {
+    const { hasMapMoveSinceLastRefine, refineWithBoudingBox } = this.context;
+
+    return (
+      <Button
+        className="redo"
+        onClick={() => refineWithBoudingBox()}
+        disabled={!hasMapMoveSinceLastRefine}
+      >
+        Redo search here
+      </Button>
+    );
+  }
+}
 
 export default Redo;
