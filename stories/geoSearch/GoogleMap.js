@@ -42,6 +42,7 @@ class GoogleMap extends Component {
 
   mapInstance = null;
   isUserInteraction = true;
+  listeners = [];
 
   createRef = c => (this.element = c);
 
@@ -108,8 +109,13 @@ class GoogleMap extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.listeners.forEach(listener => listener.remove());
+    this.listeners = [];
+  }
+
   setupListenersWhenMapIsReady = () => {
-    const onChange = () => {
+    const onMapPositionChange = () => {
       const { isRefineOnMapMove } = this.state;
 
       if (this.isUserInteraction) {
@@ -123,17 +129,27 @@ class GoogleMap extends Component {
       }
     };
 
-    this.mapInstance.addListener('center_changed', onChange);
-    this.mapInstance.addListener('zoom_changed', onChange);
-    this.mapInstance.addListener('dragstart', onChange);
+    this.listeners.push(
+      this.mapInstance.addListener('center_changed', onMapPositionChange)
+    );
 
-    this.mapInstance.addListener('idle', () => {
-      if (this.isUserInteraction && this.isPendingRefine) {
-        this.isPendingRefine = false;
+    this.listeners.push(
+      this.mapInstance.addListener('zoom_changed', onMapPositionChange)
+    );
 
-        this.refineWithBoudingBox();
-      }
-    });
+    this.listeners.push(
+      this.mapInstance.addListener('dragstart', onMapPositionChange)
+    );
+
+    this.listeners.push(
+      this.mapInstance.addListener('idle', () => {
+        if (this.isUserInteraction && this.isPendingRefine) {
+          this.isPendingRefine = false;
+
+          this.refineWithBoudingBox();
+        }
+      })
+    );
   };
 
   refineWithoutBoundingBox = () => {
