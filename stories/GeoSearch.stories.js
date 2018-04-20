@@ -2,11 +2,10 @@ import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import injectScript from 'scriptjs';
 import { setAddon, storiesOf } from '@storybook/react';
-// import places from 'places.js';
+import places from 'places.js';
 import {
-  // GeoSearch,
   Configure,
-  // CurrentRefinements,
+  CurrentRefinements,
 } from '../packages/react-instantsearch/dom';
 import { GeoSearch, Marker, Clear, Redo, Control } from './geoSearch';
 import { displayName, filterProps, WrapWithHits } from './util';
@@ -14,25 +13,11 @@ import JSXAddon from 'storybook-addon-jsx';
 
 setAddon(JSXAddon);
 
-// const Control = () => {};
-// const Clear = () => {};
-// const InfoBox = () => {};
-// const Marker = () => {};
-
-// const paddingBoundingBox = {};
-// const mapOptions = {};
-
 const stories = storiesOf('GeoSearch', module);
 
-// const position = '37.7793, -122.419';
-// const radius = 5000;
-// const precision = 2500;
-
-// Use the context for the map reference
-// <GeoSearch> have methods and provide it through context
-// <...> Just call the provided function through the context
-// - TODO: see how to customize the content of Marker
-// - TODO: see how to customize the content of Box
+const position = '37.7793, -122.419';
+const radius = 5000;
+const precision = 2500;
 
 class GoogleMapsLoader extends Component {
   static propTypes = {
@@ -47,9 +32,9 @@ class GoogleMapsLoader extends Component {
     injectScript(
       'https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8',
       () => {
-        this.setState({
+        this.setState(() => ({
           google: window.google,
-        });
+        }));
       }
     );
   }
@@ -79,43 +64,13 @@ stories.addWithJSX(
       <div style={{ height: 500 }}>
         <GoogleMapsLoader>
           {google => (
-            <GeoSearch
-              google={google}
-              // initialZoom={8}
-              // initialPosition={position}
-              // paddingBoundingBox={paddingBoundingBox}
-              // mapOptions={mapOptions}
-            >
+            <GeoSearch google={google}>
               {({ hits }) => (
                 <Fragment>
-                  {/* <Control /> */}
-                  {/* <Control defaultValue={false} /> */}
-
-                  {/* <Clear /> */}
-
-                  {/* Different propposal */}
-                  {/* <Redo /> */}
-                  {/* <DisableRefineOnMapMove /> */}
-                  {/* Other solution is to use a props on GeoSearch */}
-
-                  {/* {currentHit && (
-                  <InfoBox // Provided API
-                    position={currentHit._geoloc}
-                    onClick={() => {}}
-                    onHover={() => {}}
-                  />
-                )} */}
-
-                  {/* {currentHit && (
-                  <InfoWindow // Provided API
-                    position={currentHit._geoloc}
-                    onClick={() => {}}
-                    onHover={() => {}}
-                  />
-                )} */}
+                  <Clear />
 
                   {hits.map(hit => (
-                    <Marker // Provided API
+                    <Marker
                       key={hit.objectID}
                       hit={hit}
                       position={hit._geoloc}
@@ -138,461 +93,675 @@ stories.addWithJSX(
 );
 
 // // With IP
-// stories
-//   .addWithJSX(
-//     'with IP',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP />
+stories
+  .addWithJSX(
+    'with IP',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'with IP & radius',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP aroundRadius={radius} />
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'with IP & radius & precision',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure
-//           aroundLatLngViaIP
-//           aroundRadius={radius}
-//           aroundPrecision={precision}
-//         />
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with IP & radius',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP aroundRadius={radius} />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   );
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
+
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with IP & radius & precision',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure
+          aroundLatLngViaIP
+          aroundRadius={radius}
+          aroundPrecision={precision}
+        />
+
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
+
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  );
 
 // // With Position
-// stories
-//   .addWithJSX(
-//     'with position',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLng={position} />
+stories
+  .addWithJSX(
+    'with position',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLng={position} />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'with position & radius',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLng={position} aroundRadius={radius} />
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'with position & radius & precision',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure
-//           aroundLatLng={position}
-//           aroundRadius={radius}
-//           aroundPrecision={precision}
-//         />
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with position & radius',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLng={position} aroundRadius={radius} />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   );
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
 
-// // With Places @TODO
-// stories.addWithJSX(
-//   'with Places',
-//   () => {
-//     class Places extends Component {
-//       static propTypes = {
-//         onChange: PropTypes.func.isRequired,
-//         defaultRefinement: PropTypes.object.isRequired,
-//       };
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with position & radius & precision',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure
+          aroundLatLng={position}
+          aroundRadius={radius}
+          aroundPrecision={precision}
+        />
 
-//       createRef = c => (this.element = c);
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
 
-//       componentDidMount() {
-//         const { onChange, defaultRefinement } = this.props;
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  );
 
-//         const autocomplete = places({
-//           container: this.element,
-//           aroundRadius: radius,
-//         });
+// With Places
+stories.addWithJSX(
+  'with Places',
+  () => {
+    class Places extends Component {
+      static propTypes = {
+        onChange: PropTypes.func.isRequired,
+        defaultRefinement: PropTypes.object.isRequired,
+      };
 
-//         onChange(defaultRefinement);
+      createRef = c => (this.element = c);
 
-//         autocomplete.on('change', event => {
-//           onChange(event.suggestion.latlng);
-//         });
+      componentDidMount() {
+        const { onChange, defaultRefinement } = this.props;
 
-//         autocomplete.on('clear', () => {
-//           onChange(defaultRefinement);
-//         });
-//       }
+        const autocomplete = places({
+          container: this.element,
+        });
 
-//       render() {
-//         return (
-//           <div style={{ marginBottom: 20 }}>
-//             <input
-//               ref={this.createRef}
-//               type="search"
-//               id="address-input"
-//               placeholder="Where are we going?"
-//             />
-//           </div>
-//         );
-//       }
-//     }
+        onChange(defaultRefinement);
 
-//     class App extends Component {
-//       state = {
-//         searchState: {},
-//       };
+        autocomplete.on('change', event => {
+          onChange(event.suggestion.latlng);
+        });
 
-//       onPlacesChange = ({ lat, lng }) =>
-//         this.setState(({ searchState }) => ({
-//           searchState: {
-//             ...searchState,
-//             boundingBox: undefined,
-//             aroundLatLng: {
-//               lat,
-//               lng,
-//             },
-//           },
-//         }));
+        autocomplete.on('clear', () => {
+          onChange(defaultRefinement);
+        });
+      }
 
-//       onSearchStateChange = searchState =>
-//         this.setState(() => ({
-//           searchState,
-//         }));
+      render() {
+        return (
+          <div style={{ marginBottom: 20 }}>
+            <input
+              ref={this.createRef}
+              type="search"
+              id="address-input"
+              placeholder="Where are we going?"
+            />
+          </div>
+        );
+      }
+    }
 
-//       render() {
-//         const { searchState } = this.state;
-//         const { aroundLatLng } = searchState;
+    class App extends Component {
+      state = {
+        searchState: {},
+      };
 
-//         return (
-//           <WrapWithHits
-//             linkedStoryGroup="GeoSearch"
-//             indexName="airbnb"
-//             searchState={searchState}
-//             onSearchStateChange={this.onSearchStateChange}
-//             searchParameters={{
-//               hitsPerPage: 25,
-//               aroundRadius: radius,
-//               ...(aroundLatLng && {
-//                 aroundLatLng: `${aroundLatLng.lat},${aroundLatLng.lng}`,
-//               }),
-//             }}
-//           >
-//             <Places
-//               onChange={this.onPlacesChange}
-//               defaultRefinement={{
-//                 lat: 37.7793,
-//                 lng: -122.419,
-//               }}
-//             />
+      onPlacesChange = ({ lat, lng }) =>
+        this.setState(({ searchState }) => ({
+          searchState: {
+            ...searchState,
+            boundingBox: undefined,
+            aroundLatLng: {
+              lat,
+              lng,
+            },
+          },
+        }));
 
-//             <GeoSearch
-//               googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//               loadingElement={<div style={{ height: `100%` }} />}
-//               containerElement={<div style={{ height: `500px` }} />}
-//               mapElement={<div style={{ height: `100%` }} />}
-//             />
-//           </WrapWithHits>
-//         );
-//       }
-//     }
+      onSearchStateChange = searchState =>
+        this.setState(() => ({
+          searchState,
+        }));
 
-//     return <App />;
-//   },
-//   {
-//     displayName,
-//     filterProps,
-//   }
-// );
+      render() {
+        const { searchState } = this.state;
+        const { aroundLatLng } = searchState;
+
+        return (
+          <WrapWithHits
+            linkedStoryGroup="GeoSearch"
+            indexName="airbnb"
+            searchState={searchState}
+            onSearchStateChange={this.onSearchStateChange}
+            searchParameters={{
+              hitsPerPage: 25,
+              aroundRadius: radius,
+              ...(aroundLatLng && {
+                aroundLatLng: `${aroundLatLng.lat},${aroundLatLng.lng}`,
+              }),
+            }}
+          >
+            <Places
+              onChange={this.onPlacesChange}
+              defaultRefinement={{
+                lat: 37.7793,
+                lng: -122.419,
+              }}
+            />
+
+            <div style={{ height: 500 }}>
+              <GoogleMapsLoader>
+                {google => (
+                  <GeoSearch google={google}>
+                    {({ hits }) => (
+                      <Fragment>
+                        <Control />
+
+                        {hits.map(hit => (
+                          <Marker
+                            key={hit.objectID}
+                            hit={hit}
+                            position={hit._geoloc}
+                            onClick={() => {}}
+                            onHover={() => {}}
+                          />
+                        ))}
+                      </Fragment>
+                    )}
+                  </GeoSearch>
+                )}
+              </GoogleMapsLoader>
+            </div>
+          </WrapWithHits>
+        );
+      }
+    }
+
+    return <App />;
+  },
+  {
+    displayName,
+    filterProps,
+  }
+);
 
 // // Only UI
-// stories
-//   .addWithJSX(
-//     'with control & refine on map move',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP />
+stories
+  .addWithJSX(
+    'with control & refine on map move',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//           enableRefineControl
-//           enableRefineOnMapMove
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'with control & disable refine on map move',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP />
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Control />
+                    <Clear />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//           enableRefineOnMapMove={false}
-//           enableRefineControl
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'without control & refine on map move',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP />
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with control & disable refine on map move',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//           enableRefineControl={false}
-//           enableRefineOnMapMove
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'without control & disable refine on map move',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP />
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Control defaultValue={false} />
+                    <Clear />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//           enableRefineControl={false}
-//           enableRefineOnMapMove={false}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   )
-//   .addWithJSX(
-//     'with CurrentRefinement',
-//     () => (
-//       <WrapWithHits
-//         linkedStoryGroup="GeoSearch"
-//         indexName="airbnb"
-//         searchParameters={{
-//           hitsPerPage: 25,
-//         }}
-//       >
-//         <Configure aroundLatLngViaIP />
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'without control & refine on map move',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
 
-//         <div style={{ height: 50 }}>
-//           <CurrentRefinements />
-//         </div>
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'without control & disable refine on map move',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
 
-//         <GeoSearch
-//           googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//           loadingElement={<div style={{ height: `100%` }} />}
-//           containerElement={<div style={{ height: `500px` }} />}
-//           mapElement={<div style={{ height: `100%` }} />}
-//         />
-//       </WrapWithHits>
-//     ),
-//     {
-//       displayName,
-//       filterProps,
-//     }
-//   );
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Redo />
+                    <Clear />
 
-// stories.add('with unmount', () => {
-//   class App extends Component {
-//     state = {
-//       isVisible: true,
-//     };
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with CurrentRefinement',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
 
-//     onToggle = () =>
-//       this.setState(prevState => ({
-//         isVisible: !prevState.isVisible,
-//       }));
+        <div style={{ height: 50 }}>
+          <CurrentRefinements />
+        </div>
 
-//     render() {
-//       const { isVisible } = this.state;
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
 
-//       return (
-//         <WrapWithHits
-//           linkedStoryGroup="GeoSearch"
-//           indexName="airbnb"
-//           searchParameters={{
-//             hitsPerPage: 25,
-//           }}
-//         >
-//           <button onClick={this.onToggle}>
-//             {isVisible ? 'Unmount' : 'Mount'}
-//           </button>
+                    {hits.map(hit => (
+                      <Marker
+                        key={hit.objectID}
+                        hit={hit}
+                        position={hit._geoloc}
+                        onClick={() => {}}
+                        onHover={() => {}}
+                      />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  );
 
-//           <Configure aroundLatLngViaIP />
+// Unmount
+stories.add('with unmount', () => {
+  class App extends Component {
+    state = {
+      isVisible: true,
+    };
 
-//           {isVisible && (
-//             <GeoSearch
-//               googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8"
-//               loadingElement={<div style={{ height: `100%` }} />}
-//               containerElement={<div style={{ height: `500px` }} />}
-//               mapElement={<div style={{ height: `100%` }} />}
-//             />
-//           )}
-//         </WrapWithHits>
-//       );
-//     }
-//   }
+    onToggle = () =>
+      this.setState(prevState => ({
+        isVisible: !prevState.isVisible,
+      }));
 
-//   return <App />;
-// });
+    render() {
+      const { isVisible } = this.state;
+
+      return (
+        <WrapWithHits
+          linkedStoryGroup="GeoSearch"
+          indexName="airbnb"
+          searchParameters={{
+            hitsPerPage: 25,
+          }}
+        >
+          <button onClick={this.onToggle}>
+            {isVisible ? 'Unmount' : 'Mount'}
+          </button>
+
+          <Configure aroundLatLngViaIP />
+
+          {isVisible && (
+            <div style={{ height: 500 }}>
+              <GoogleMapsLoader>
+                {google => (
+                  <GeoSearch google={google}>
+                    {({ hits }) => (
+                      <Fragment>
+                        <Clear />
+
+                        {hits.map(hit => (
+                          <Marker
+                            key={hit.objectID}
+                            hit={hit}
+                            position={hit._geoloc}
+                            onClick={() => {}}
+                            onHover={() => {}}
+                          />
+                        ))}
+                      </Fragment>
+                    )}
+                  </GeoSearch>
+                )}
+              </GoogleMapsLoader>
+            </div>
+          )}
+        </WrapWithHits>
+      );
+    }
+  }
+
+  return <App />;
+});
