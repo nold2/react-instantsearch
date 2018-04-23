@@ -6,7 +6,14 @@ import {
   Configure,
   CurrentRefinements,
 } from '../packages/react-instantsearch/dom';
-import { GeoSearch, Marker, Clear, Redo, Control } from './geoSearch';
+import {
+  GeoSearch,
+  Marker,
+  HTMLMarker,
+  Clear,
+  Redo,
+  Control,
+} from './geoSearch';
 import Places from './geoSearch/Places';
 import { displayName, filterProps, WrapWithHits } from './util';
 import JSXAddon from 'storybook-addon-jsx';
@@ -564,6 +571,53 @@ stories
                         onClick={() => {}}
                         onHover={() => {}}
                       />
+                    ))}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </div>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with HTMLMarker',
+    () => (
+      <WrapWithHits
+        linkedStoryGroup="GeoSearch"
+        indexName="airbnb"
+        searchParameters={{
+          hitsPerPage: 25,
+        }}
+      >
+        <Configure aroundLatLngViaIP />
+
+        <div style={{ height: 500 }}>
+          <GoogleMapsLoader>
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Clear />
+
+                    {hits.map(hit => (
+                      <Fragment key={hit.objectID}>
+                        <HTMLMarker
+                          hit={hit}
+                          position={hit._geoloc}
+                          onClick={() => {}}
+                          onHover={() => {}}
+                        >
+                          <div className="my-custom-marker">
+                            {hit.price_formatted}
+                          </div>
+                        </HTMLMarker>
+                      </Fragment>
                     ))}
                   </Fragment>
                 )}

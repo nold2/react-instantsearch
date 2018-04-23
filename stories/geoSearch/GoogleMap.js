@@ -1,4 +1,4 @@
-// import { isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
@@ -98,19 +98,21 @@ class GoogleMap extends Component {
       this.setupListenersWhenMapIsReady
     );
 
+    this.fitViewToBounds();
+
     this.setState(() => ({
       isMapAlreadyRender: true,
     }));
   }
 
-  componentDidUpdate() {
-    const { google, position, boundingBox, isRefinedWithMap } = this.props;
+  componentDidUpdate(prevProps) {
+    const { position, boundingBox, isRefinedWithMap } = this.props;
     const { hasMapMoveSinceLastRefine } = this.state;
     const fitBoundsEnable =
-      boundingBox && !isRefinedWithMap && !hasMapMoveSinceLastRefine;
-
-    // Keep the default padding when it's not refined with the map
-    const padding = isRefinedWithMap ? 0 : null;
+      boundingBox &&
+      !isRefinedWithMap &&
+      !hasMapMoveSinceLastRefine &&
+      !isEqual(boundingBox, prevProps.boundingBox);
 
     const positionChangedSinceLastRefine =
       Boolean(position) &&
@@ -142,15 +144,7 @@ class GoogleMap extends Component {
       // console.log('fit');
       // console.log(boundingBox);
       // console.log('---');
-      this.isUserInteraction = false;
-      this.mapInstance.fitBounds(
-        new google.maps.LatLngBounds(
-          boundingBox.southWest,
-          boundingBox.northEast
-        ),
-        padding
-      );
-      this.isUserInteraction = true;
+      this.fitViewToBounds();
     }
   }
 
@@ -240,6 +234,21 @@ class GoogleMap extends Component {
       isRefineOnMapMove: value,
     }));
   };
+
+  fitViewToBounds() {
+    const { google, boundingBox, isRefinedWithMap } = this.props;
+    const padding = isRefinedWithMap ? 0 : null;
+
+    this.isUserInteraction = false;
+    this.mapInstance.fitBounds(
+      new google.maps.LatLngBounds(
+        boundingBox.southWest,
+        boundingBox.northEast
+      ),
+      padding
+    );
+    this.isUserInteraction = true;
+  }
 
   render() {
     const { children } = this.props;
