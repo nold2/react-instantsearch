@@ -31,6 +31,8 @@ class GoogleMapsLoader extends Component {
     children: PropTypes.func.isRequired,
   };
 
+  isUnmounting = false;
+
   state = {
     google: null,
   };
@@ -39,19 +41,28 @@ class GoogleMapsLoader extends Component {
     injectScript(
       'https://maps.googleapis.com/maps/api/js?v=3.31&key=AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8',
       () => {
-        this.setState(() => ({
-          google: window.google,
-        }));
+        if (!this.isUnmounting) {
+          this.setState(() => ({
+            google: window.google,
+          }));
+        }
       }
     );
   }
 
+  componentWillUnmount() {
+    this.isUnmounting = true;
+  }
+
   render() {
-    if (!this.state.google) {
+    const { children } = this.props;
+    const { google } = this.state;
+
+    if (!google) {
       return null;
     }
 
-    return this.props.children(this.state.google);
+    return children(google);
   }
 }
 
