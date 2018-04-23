@@ -54,9 +54,10 @@ class GeoSearch extends Component {
     return (
       <GoogleMap
         google={google}
+        position={position}
         boundingBox={currentRefinement || hitsBoundingBox}
         initialZoom={initialZoom}
-        initialPosition={position || initialPosition}
+        initialPosition={initialPosition}
         isRefinedWithMap={isRefinedWithMap}
         refine={refine}
       >

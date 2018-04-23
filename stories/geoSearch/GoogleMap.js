@@ -1,3 +1,4 @@
+// import { isEqual } from 'lodash';
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
@@ -34,6 +35,7 @@ class GoogleMap extends Component {
     isRefinedWithMap: PropTypes.bool.isRequired,
     refine: PropTypes.func.isRequired,
     children: PropTypes.node.isRequired,
+    position: LatLngPropTypes,
   };
 
   static childContextTypes = {
@@ -56,6 +58,8 @@ class GoogleMap extends Component {
 
   mapInstance = null;
   isUserInteraction = true;
+  lastRefinePosition = this.props.position;
+  lastRefineBoundingBox = this.props.boundingBox;
   listeners = [];
 
   getChildContext() {
@@ -100,7 +104,7 @@ class GoogleMap extends Component {
   }
 
   componentDidUpdate() {
-    const { google, boundingBox, isRefinedWithMap } = this.props;
+    const { google, position, boundingBox, isRefinedWithMap } = this.props;
     const { hasMapMoveSinceLastRefine } = this.state;
     const fitBoundsEnable =
       boundingBox && !isRefinedWithMap && !hasMapMoveSinceLastRefine;
@@ -108,7 +112,36 @@ class GoogleMap extends Component {
     // Keep the default padding when it's not refined with the map
     const padding = isRefinedWithMap ? 0 : null;
 
+    const positionChangedSinceLastRefine =
+      Boolean(position) &&
+      Boolean(this.lastRefinePosition) &&
+      position !== this.lastRefinePosition;
+
+    // Do the same test but in the component above
+    // because the boudingBox is always set in that
+    // case (currentRefinement || hitBoundingBox)
+    // const boundingBoxChangedSinceLastRefine = !isEqual(
+    //   boundingBox,
+    //   this.lastRefineBoundingBox
+    // );
+
+    this.lastRefinePosition = position;
+    // this.lastRefineBoundingBox = boundingBox;
+
+    if (positionChangedSinceLastRefine) {
+      // if (positionChangedSinceLastRefine || boundingBoxChangedSinceLastRefine) {
+      // console.log('here');
+      this.setState({
+        hasMapMoveSinceLastRefine: false,
+      });
+
+      return;
+    }
+
     if (fitBoundsEnable) {
+      // console.log('fit');
+      // console.log(boundingBox);
+      // console.log('---');
       this.isUserInteraction = false;
       this.mapInstance.fitBounds(
         new google.maps.LatLngBounds(
