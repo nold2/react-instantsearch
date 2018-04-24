@@ -60,6 +60,7 @@
     "happo": "5.0.0",
     "happo-core": "5.0.0",
     "happo-target-firefox": "5.0.0",
+    "instantsearch.css": "7.1.0",
     "json": "9.0.6",
     "mversion": "1.10.1",
     "netlify-cli": "1.2.2",
