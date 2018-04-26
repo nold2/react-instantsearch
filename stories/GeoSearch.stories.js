@@ -6,6 +6,7 @@ import {
   GoogleMapsLoader,
   GeoSearch,
   Marker,
+  Redo,
 } from '../packages/react-instantsearch-dom-geo/src/index';
 import { displayName, filterProps, WrapWithHits } from './util';
 import { Configure } from '../packages/react-instantsearch/dom';
@@ -116,6 +117,38 @@ stories
               >
                 {({ hits }) => (
                   <Fragment>
+                    {hits.map(hit => <Marker key={hit.objectID} hit={hit} />)}
+                  </Fragment>
+                )}
+              </GeoSearch>
+            )}
+          </GoogleMapsLoader>
+        </Container>
+      </WrapWithHits>
+    ),
+    {
+      displayName,
+      filterProps,
+    }
+  )
+  .addWithJSX(
+    'with <Redo> component',
+    () => (
+      <WrapWithHits
+        indexName="airbnb"
+        linkedStoryGroup="GeoSearch"
+        searchParameters={{ hitsPerPage: 20 }}
+      >
+        <Configure aroundLatLngViaIP />
+
+        <Container>
+          <GoogleMapsLoader apiKey="AIzaSyCl2TTJXpwxGuuc2zQZkAlIkWhpYbyjjP8">
+            {google => (
+              <GeoSearch google={google}>
+                {({ hits }) => (
+                  <Fragment>
+                    <Redo />
+
                     {hits.map(hit => <Marker key={hit.objectID} hit={hit} />)}
                   </Fragment>
                 )}
