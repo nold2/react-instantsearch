@@ -41,7 +41,15 @@ class GeoSearch extends Component {
     };
   }
 
-  renderProviderChildren = ({ hits, currentRefinement, position, refine }) => {
+  renderProviderChildren = ({
+    hits,
+    currentRefinement,
+    position,
+    isRefineOnMapMove,
+    hasMapMoveSinceLastRefine,
+    refine,
+    setMapMoveSinceLastRefine,
+  }) => {
     const {
       google,
       initialZoom,
@@ -63,9 +71,12 @@ class GeoSearch extends Component {
         initialZoom={initialZoom}
         initialPosition={initialPosition}
         mapOptions={mapOptions}
+        isRefineOnMapMove={isRefineOnMapMove}
+        hasMapMoveSinceLastRefine={hasMapMoveSinceLastRefine}
         boundingBox={boundingBox}
         position={position}
         refine={refine}
+        setMapMoveSinceLastRefine={setMapMoveSinceLastRefine}
       >
         {children({ hits })}
       </GoogleMaps>
